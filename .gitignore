@@ -1,0 +1,61 @@
+# Python-specific ignores
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+sdist/
+venv/
+env/
+.venv/
+*.log
+
+# Byte-compiled / optimized / DLL files
+__pycache__
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+_bootstrap
+_build
+eggs
+develop-eggs
+lib64
+pkg_resources
+sdist  # Wheel distribution is preferred but sdist might exist
+var
+wheels
+pip-wheel-metadata
+.installed.cfg
+*.egg
+*.whl
+MANIFEST.in
+build/
+develop-eggs/
+dist/
+eggs/
+lib64/
+lib/
+*.egg-info
+.env
+.venv
+env/
+
+# Log files
+*.log
+*.out
+
+# OS or Editor specific files (adjust as needed)
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
+*.tmp
+*.bak
+node_modules/
