@@ -6,3 +6,4 @@ pdf2image
 googletrans
 reportlab
 transformers
+gunicorn  # Make sure this line is present
