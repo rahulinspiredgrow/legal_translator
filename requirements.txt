@@ -1,0 +1,8 @@
+Flask
+pdfminer.six
+pytesseract
+Pillow
+pdf2image
+googletrans
+reportlab
+transformers
