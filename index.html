@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legal Translator</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        h1, h2, h3 {
+            color: #007bff;
+        }
+        input[type="file"] {
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #fff;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #hindiText, #englishText, #hindiSummary, #englishSummary {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #fff;
+            white-space: pre-wrap; /* Preserve line breaks */
+        }
+        h2 {
+            margin-top: 25px;
+        }
+        .summary-container {
+            display: flex;
+            gap: 20px;
+        }
+        .summary-container div {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <h1>Legal Translator</h1>
+
+    <input type="file" id="pdfFile" accept=".pdf"><br><br>
+    <button onclick="processPDF()">Translate</button>
+
+    <h2>Extracted Text (Hindi):</h2>
+    <div id="hindiText"></div>
+
+    <h2>Translated Text (English):</h2>
+    <div id="englishText"></div>
+
+    <h2>Summary:</h2>
+    <div class="summary-container">
+        <div>
+            <h3>Hindi Summary:</h3>
+            <div id="hindiSummary"></div>
+        </div>
+        <div>
+            <h3>English Summary:</h3>
+            <div id="englishSummary"></div>
+        </div>
+    </div>
+
+    <button onclick="generatePDF()">Generate PDF</button>
+
+    <script>
+        async function processPDF() {
+            const fileInput = document.getElementById('pdfFile');
+            const hindiTextDiv = document.getElementById('hindiText');
+            const englishTextDiv = document.getElementById('englishText');
+            const hindiSummaryDiv = document.getElementById('hindiSummary');
+            const englishSummaryDiv = document.getElementById('englishSummary');
+
+            const file = fileInput.files[0];
+            if (file) {
+                const formData = new FormData();
+                formData.append('pdf_file', file);
+
+                try {
+                    const response = await fetch('/process_pdf', { // Your Python backend endpoint
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await response.json();
+                    hindiTextDiv.innerText = data.hindi_text || 'No text extracted.';
+                    englishTextDiv.innerText = data.english_text || 'Translation failed.';
+                    hindiSummaryDiv.innerText = data.hindi_summary || 'No summary generated.';
+                    englishSummaryDiv.innerText = data.english_summary || 'No summary generated.';
+                } catch (error) {
+                    console.error('Error processing PDF:', error);
+                    hindiTextDiv.innerText = 'Error processing the file.';
+                    englishTextDiv.innerText = 'Error processing the file.';
+                    hindiSummaryDiv.innerText = 'Error processing the file.';
+                    englishSummaryDiv.innerText = 'Error processing the file.';
+                }
+            } else {
+                alert('Please select a PDF file.');
+            }
+        }
+
+        async function generatePDF() {
+            const englishText = document.getElementById('englishText').innerText;
+            if (englishText) {
+                try {
+                    const response = await fetch('/generate_pdf', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ text: englishText })
+                    });
+                    if (response.ok) {
+                        const blob = await response.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'translated_document.pdf';
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        window.URL.revokeObjectURL(url);
+                    } else {
+                        alert('Failed to generate PDF.');
+                    }
+                } catch (error) {
+                    console.error('Error generating PDF:', error);
+                    alert('Error generating PDF.');
+                }
+            } else {
+                alert('No English text to generate PDF from.');
+            }
+        }
+    </script>
+</body>
+</html>
